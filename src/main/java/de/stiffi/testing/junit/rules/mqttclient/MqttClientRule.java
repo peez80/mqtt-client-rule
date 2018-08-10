@@ -63,7 +63,6 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
             sslClientProperties.setProperty(SSLSocketFactoryFactory.TRUSTSTORETYPE, "JKS");
             sslClientProperties.setProperty(SSLSocketFactoryFactory.TRUSTSTORE, truststorePath);
             sslClientProperties.setProperty(SSLSocketFactoryFactory.TRUSTSTOREPWD, truststorePass);
-            sslClientProperties.setProperty(SSLSocketFactoryFactory.CIPHERSUITES, "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384");
 
             connOpts.setSSLProperties(sslClientProperties);
         }
