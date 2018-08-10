@@ -119,7 +119,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() < start + timeoutMs) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(50);
                 if (receivedMessages.containsKey(topic)) {
                     return;
                 }
