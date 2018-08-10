@@ -128,4 +128,8 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
             }
         }
     }
+
+    public void waitForMessage(String topic) {
+        waitForMessage(topic, 10000l);
+    }
 }
