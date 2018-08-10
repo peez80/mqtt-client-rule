@@ -24,7 +24,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     /**
      * topic - list(messages)
      */
-    private Map<String , List<byte[]>> receivedMessages = new HashMap<>();
+    private Map<String, List<byte[]>> receivedMessages = new HashMap<>();
 
 
     public MqttClientRule(String brokerhost, boolean ssl, int brokerPort, String username, String password, String truststorePath, String truststorePass) {
@@ -87,7 +87,6 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     }
 
 
-
     public void publish(String topic, byte[] payload, int qos) throws MqttException {
         mqttClient.publish(topic, payload, qos, false);
     }
@@ -114,5 +113,19 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     public List<byte[]> getMessages(String topic) {
         return receivedMessages.getOrDefault(topic, new ArrayList<>());
+    }
+
+    public void waitForMessage(String topic, long timeoutMs) {
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() < start + timeoutMs) {
+            try {
+                Thread.sleep(100);
+                if (receivedMessages.containsKey(topic)) {
+                    return;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
