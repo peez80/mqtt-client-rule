@@ -6,7 +6,9 @@ import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.junit.rules.ExternalResource;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class DockerComposeRule extends ExternalResource {
@@ -24,15 +26,30 @@ public class DockerComposeRule extends ExternalResource {
     public void start(String composeFilePath) throws IOException {
         String cmd = "docker-compose -f " + composeFilePath + " up -d";
         System.out.println(cmd);
-        Runtime.getRuntime().exec(cmd);
+        Process p = Runtime.getRuntime().exec(cmd);
+        System.out.println(getProcessOutput(p));
         runningFiles.add(composeFilePath);
+    }
+
+    private String getProcessOutput(Process p) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader reader =
+                     new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+        }
+        return sb.toString();
     }
 
     public void stop(String composeFilePath) {
         try {
             String cmd = "docker-compose -f " + composeFilePath + " rm -sf";
             System.out.println(cmd);
-            Runtime.getRuntime().exec(cmd);
+            Process p = Runtime.getRuntime().exec(cmd);
+            System.out.println(getProcessOutput(p));
             runningFiles.remove(composeFilePath);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
