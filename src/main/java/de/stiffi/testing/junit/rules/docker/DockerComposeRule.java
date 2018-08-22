@@ -23,6 +23,7 @@ public class DockerComposeRule extends ExternalResource {
 
     public void start(String composeFilePath) throws IOException {
         String cmd = "docker-compose -f " + composeFilePath + " up -d";
+        System.out.println(cmd);
         Runtime.getRuntime().exec(cmd);
         runningFiles.add(composeFilePath);
     }
@@ -30,6 +31,7 @@ public class DockerComposeRule extends ExternalResource {
     public void stop(String composeFilePath) {
         try {
             String cmd = "docker-compose -f " + composeFilePath + " rm -sf";
+            System.out.println(cmd);
             Runtime.getRuntime().exec(cmd);
             runningFiles.remove(composeFilePath);
         } catch (IOException e) {
