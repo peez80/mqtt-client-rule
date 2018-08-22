@@ -11,7 +11,7 @@ import java.util.*;
 
 public class DockerComposeRule extends ExternalResource {
 
-    private List<String> runningFiles;
+    private List<String> runningFiles = new ArrayList<>();
 
     private String initialComposeFilePath;
 
