@@ -57,7 +57,7 @@ public class DockerComposeRule extends ExternalResource {
     }
 
     public void stopAll() {
-        List<String> composeFiles = Collections.unmodifiableList(runningFiles);
+        List<String> composeFiles = new ArrayList<>(runningFiles);
         for (String composeFile : composeFiles) {
             stop(composeFile);
         }
