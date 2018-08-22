@@ -33,7 +33,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         this.brokerPort = brokerPort;
         this.username = username;
         this.password = password;
-        this.clientId = "MqttClientRuleTesting_" + System.currentTimeMillis();
+        this.clientId = "MqttClientRuleTesting_" + System.currentTimeMillis() + "_"+ new Random(System.currentTimeMillis()).nextInt();
         this.truststorePath = truststorePath;
         this.truststorePass = truststorePass;
     }
