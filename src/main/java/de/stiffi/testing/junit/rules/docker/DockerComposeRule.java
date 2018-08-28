@@ -13,22 +13,22 @@ import java.util.*;
 
 public class DockerComposeRule extends ExternalResource {
 
-    private List<String> runningFiles = new ArrayList<>();
-
-    private String initialComposeFilePath;
-
+    private DockerComposeRunInformation runInfo;
 
     public DockerComposeRule(String initialComposeFilePath) {
-        this.initialComposeFilePath = initialComposeFilePath;
+        this.runInfo = new DockerComposeRunInformation(initialComposeFilePath);
+    }
+
+    public DockerComposeRule(String initialComposeFilePath, String... servicesToStart) {
+        this.runInfo = new DockerComposeRunInformation(initialComposeFilePath, servicesToStart);
     }
 
 
-    public void start(String composeFilePath) throws IOException {
-        String cmd = "docker-compose -f " + composeFilePath + " up -d";
+    public void start() throws IOException {
+        String cmd = "docker-compose -f " + runInfo.composeFilePath + " up -d " + runInfo.getServicesAsString();
         System.out.println(cmd);
         Process p = Runtime.getRuntime().exec(cmd);
         System.out.println(getProcessOutput(p));
-        runningFiles.add(composeFilePath);
     }
 
     private String getProcessOutput(Process p) throws IOException {
@@ -44,34 +44,27 @@ public class DockerComposeRule extends ExternalResource {
         return sb.toString();
     }
 
-    public void stop(String composeFilePath) {
+
+    public void stop() {
         try {
-            String cmd = "docker-compose -f " + composeFilePath + " rm -sf";
+            String cmd = "docker-compose -f " + runInfo + " rm -sf " + runInfo.getServicesAsString();
+
             System.out.println(cmd);
             Process p = Runtime.getRuntime().exec(cmd);
             System.out.println(getProcessOutput(p));
-            runningFiles.remove(composeFilePath);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
-    public void stopAll() {
-        List<String> composeFiles = new ArrayList<>(runningFiles);
-        for (String composeFile : composeFiles) {
-            stop(composeFile);
-        }
-    }
 
     @Override
     protected void before() throws Throwable {
-        if (StringUtils.isNotBlank(initialComposeFilePath)) {
-            start(initialComposeFilePath);
-        }
+        start();
     }
 
     @Override
     protected void after() {
-        stopAll();
+        stop();
     }
 }
