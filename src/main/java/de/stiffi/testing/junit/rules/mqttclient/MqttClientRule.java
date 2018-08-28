@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.junit.Assert;
 import org.junit.rules.ExternalResource;
 
 import java.util.*;
@@ -131,5 +132,10 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     public void waitForMessage(String topic) {
         waitForMessage(topic, 10000l);
+    }
+
+    public void assertMessagesReceived(String topic, int expectedMessageCount) {
+        List<byte[]> receivedMessages = getMessages(topic);
+        Assert.assertEquals("Wrong message Count", expectedMessageCount, receivedMessages.size());
     }
 }
