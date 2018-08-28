@@ -47,7 +47,7 @@ public class DockerComposeRule extends ExternalResource {
 
     public void stop() {
         try {
-            String cmd = "docker-compose -f " + runInfo + " rm -sf " + runInfo.getServicesAsString();
+            String cmd = "docker-compose -f " + runInfo.composeFilePath + " rm -sf " + runInfo.getServicesAsString();
 
             System.out.println(cmd);
             Process p = Runtime.getRuntime().exec(cmd);
