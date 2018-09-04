@@ -44,6 +44,14 @@ public class DockerComposeRule extends ExternalResource {
         return sb.toString();
     }
 
+    public String getLogs(String service) throws IOException {
+        String cmd = "docker-compose -f " + runInfo.composeFilePath + " logs " + service;
+        System.out.println(cmd);
+        Process p = Runtime.getRuntime().exec(cmd);
+        String logs = getProcessOutput(p);
+        return logs;
+    }
+
 
     public void stop() {
         try {
