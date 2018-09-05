@@ -117,6 +117,10 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     }
 
     public void waitForMessage(String topic, long timeoutMs) {
+        if (timeoutMs <= 0) {
+            return;
+        }
+
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() < start + timeoutMs) {
             try {
@@ -135,6 +139,11 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     }
 
     public void assertMessagesReceived(String topic, int expectedMessageCount) {
+        assertMessagesReceived(topic, expectedMessageCount, 10000l);
+    }
+
+    public void assertMessagesReceived(String topic, int expectedMessageCount, long waitForMessageTimeout) {
+        waitForMessage(topic, waitForMessageTimeout);
         List<byte[]> receivedMessages = getMessages(topic);
         Assert.assertEquals("Wrong message Count", expectedMessageCount, receivedMessages.size());
     }
