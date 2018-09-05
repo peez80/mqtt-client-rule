@@ -151,6 +151,5 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         if (receivedMessages.size() != expectedMessageCount) {
             Assert.fail(msg);
         }
-        Assert.assertEquals(msg, expectedMessageCount, receivedMessages.size());
     }
 }
