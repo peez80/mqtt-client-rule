@@ -146,7 +146,10 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         waitForMessage(topic, waitForMessageTimeout);
         List<byte[]> receivedMessages = getMessages(topic);
 
-        String msg = failedMessage + ", \n\texpected Topic: " + topic + "\n\texpected Count: " + expectedMessageCount;
+        String msg = failedMessage + ", \nExpected : " + expectedMessageCount + " messages on " + topic + "\nActual   : " + expectedMessageCount + " messages";
+        if (receivedMessages.size() != expectedMessageCount) {
+            Assert.fail(msg);
+        }
         Assert.assertEquals(msg, expectedMessageCount, receivedMessages.size());
     }
 }
