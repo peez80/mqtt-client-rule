@@ -34,7 +34,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         this.brokerPort = brokerPort;
         this.username = username;
         this.password = password;
-        this.clientId = "MqttClientRuleTesting_" + System.currentTimeMillis() + "_"+ new Random(System.currentTimeMillis()).nextInt();
+        this.clientId = "MqttClientRuleTesting_" + System.currentTimeMillis() + "_" + new Random(System.currentTimeMillis()).nextInt();
         this.truststorePath = truststorePath;
         this.truststorePass = truststorePass;
     }
@@ -145,6 +145,8 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     public void assertMessagesReceived(String failedMessage, String topic, int expectedMessageCount, long waitForMessageTimeout) {
         waitForMessage(topic, waitForMessageTimeout);
         List<byte[]> receivedMessages = getMessages(topic);
-        Assert.assertEquals(failedMessage, expectedMessageCount, receivedMessages.size());
+
+        String msg = failedMessage + ", \nexpected Topic: " + topic + "\nexpected Count: " + expectedMessageCount;
+        Assert.assertEquals(msg, expectedMessageCount, receivedMessages.size());
     }
 }
