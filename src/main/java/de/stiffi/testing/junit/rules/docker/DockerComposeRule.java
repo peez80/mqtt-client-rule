@@ -65,6 +65,10 @@ public class DockerComposeRule extends ExternalResource {
         }
     }
 
+    public String getComposeFilePath() {
+        return runInfo.composeFilePath;
+    }
+
 
     @Override
     protected void before() throws Throwable {
