@@ -21,7 +21,9 @@ public class TcpPollerRule extends ExternalResource {
 
     @Override
     protected void before() throws Throwable {
+        System.out.println("Waiting for " + host + ":" + port);
         poll();
+        System.out.println(host + ":" + port + " is available now");
     }
 
     private void poll() throws InterruptedException {
@@ -33,7 +35,7 @@ public class TcpPollerRule extends ExternalResource {
                 //If we get here, Socket succeeded
                 return;
             } catch (Exception e) {
-                e.printStackTrace();
+                //Nothing...
             }
 
             Thread.sleep(pollIntervalMs);
