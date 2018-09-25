@@ -101,6 +101,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     @Override
     public synchronized void messageArrived(String topic, MqttMessage message) throws Exception {
+        System.out.println("MQTT Message arrived on Topic: " + topic);
         if (!receivedMessages.containsKey(topic)) {
             receivedMessages.put(topic, new ArrayList<>());
         }
