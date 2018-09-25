@@ -118,7 +118,11 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         return receivedMessages.getOrDefault(topic, new ArrayList<>());
     }
 
-    public void waitForMessage(String topic, long timeoutMs) {
+    public void waitForMessage(String topic, long timeoutMs){
+        waitForMessage(topic, timeoutMs, 1);
+    }
+
+    public void waitForMessage(String topic, long timeoutMs, int minimalNumberOfMessages) {
         if (timeoutMs <= 0) {
             return;
         }
@@ -127,7 +131,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         while (System.currentTimeMillis() < start + timeoutMs) {
             try {
                 Thread.sleep(50);
-                if (receivedMessages.containsKey(topic)) {
+                if (receivedMessages.containsKey(topic) && receivedMessages.get(topic).size() >= minimalNumberOfMessages) {
                     return;
                 }
             } catch (InterruptedException e) {
