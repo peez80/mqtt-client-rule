@@ -85,7 +85,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     }
 
     public void subscribe(String topic) throws MqttException {
-        mqttClient.subscribe(topic);
+        mqttClient.subscribe(topic, 1);
     }
 
 
