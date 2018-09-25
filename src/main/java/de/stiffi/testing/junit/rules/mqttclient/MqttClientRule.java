@@ -25,7 +25,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     /**
      * topic - list(messages)
      */
-    private Map<String, List<byte[]>> receivedMessages = Collections.synchronizedMap(new HashMap<>());
+    private Set<ReceivedMessage> receivedMessages = Collections.synchronizedSet(new HashSet<>());
 
 
     public MqttClientRule(String brokerhost, boolean ssl, int brokerPort, String username, String password, String truststorePath, String truststorePass) {
@@ -101,16 +101,8 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
-        synchronized (this) {
-            if (!receivedMessages.containsKey(topic)) {
-                receivedMessages.put(topic, Collections.synchronizedList(new ArrayList<>()));
-            }
-        }
-
-        List<byte[]> messagesOnTopic = receivedMessages.get(topic);
-        messagesOnTopic.add(message.getPayload());
-
-        System.out.println("Received MQTT message on topic " + topic + ", Count: " + messagesOnTopic.size());
+        receivedMessages.add(new ReceivedMessage(topic, message.getPayload()));
+        System.out.println("Received MQTT message on topic " + topic + ", Count: " + getMessages(topic).size());
     }
 
     @Override
@@ -119,7 +111,13 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     }
 
     public List<byte[]> getMessages(String topic) {
-        return receivedMessages.getOrDefault(topic, new ArrayList<>());
+        List<byte[]> messages = new ArrayList<>(receivedMessages.size());
+        for (ReceivedMessage msg : receivedMessages) {
+            if (msg.topic.equals(topic)) {
+                messages.add(msg.payload);
+            }
+        }
+        return messages;
     }
 
     public void waitForMessage(String topic, long timeoutMs){
@@ -135,7 +133,8 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         while (System.currentTimeMillis() < start + timeoutMs) {
             try {
                 Thread.sleep(50);
-                if (receivedMessages.containsKey(topic) && receivedMessages.get(topic).size() >= minimalNumberOfMessages) {
+                List<byte[]> messages = getMessages(topic);
+                if (messages.size() >= minimalNumberOfMessages) {
                     return;
                 }
             } catch (InterruptedException e) {
