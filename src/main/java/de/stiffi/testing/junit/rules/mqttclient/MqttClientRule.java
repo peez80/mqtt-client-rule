@@ -25,7 +25,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     /**
      * topic - list(messages)
      */
-    private Map<String, List<byte[]>> receivedMessages = new HashMap<>();
+    private Map<String, List<byte[]>> receivedMessages = Collections.synchronizedMap(new HashMap<>());
 
 
     public MqttClientRule(String brokerhost, boolean ssl, int brokerPort, String username, String password, String truststorePath, String truststorePass) {
@@ -100,14 +100,17 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     }
 
     @Override
-    public synchronized void messageArrived(String topic, MqttMessage message) throws Exception {
-        System.out.println("MQTT Message arrived on Topic: " + topic);
-        if (!receivedMessages.containsKey(topic)) {
-            receivedMessages.put(topic, new ArrayList<>());
+    public void messageArrived(String topic, MqttMessage message) throws Exception {
+        synchronized (this) {
+            if (!receivedMessages.containsKey(topic)) {
+                receivedMessages.put(topic, Collections.synchronizedList(new ArrayList<>()));
+            }
         }
 
         List<byte[]> messagesOnTopic = receivedMessages.get(topic);
         messagesOnTopic.add(message.getPayload());
+
+        System.out.println("Received MQTT message on topic " + topic + ", Count: " + messagesOnTopic.size());
     }
 
     @Override
