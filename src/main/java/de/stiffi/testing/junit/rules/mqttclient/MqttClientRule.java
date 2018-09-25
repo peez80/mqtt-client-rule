@@ -100,7 +100,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     }
 
     @Override
-    public void messageArrived(String topic, MqttMessage message) throws Exception {
+    public synchronized void messageArrived(String topic, MqttMessage message) throws Exception {
         if (!receivedMessages.containsKey(topic)) {
             receivedMessages.put(topic, new ArrayList<>());
         }
