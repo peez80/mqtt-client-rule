@@ -70,7 +70,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         }
 
 
-        System.out.println("MQTT Connect...");
+        System.out.println("MQTT Connect....");
         mqttClient.connect(connOpts);
     }
 
