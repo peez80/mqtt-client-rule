@@ -25,7 +25,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private int maxInflightWindow = 10;
     private int clientInstanceCount = 1;
 
-    private String SHARED_SUBSCRIPTION_PREFIX= "$share:SH"+ DigestUtils.md5("" + new Random().nextInt()) +":";
+    private String SHARED_SUBSCRIPTION_PREFIX= "$share:SH"+ new String(DigestUtils.md5("" + new Random().nextInt())) +":";
 
     /**
      * topic - list(messages)
