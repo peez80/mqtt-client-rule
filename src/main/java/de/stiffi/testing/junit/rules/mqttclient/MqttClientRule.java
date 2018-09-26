@@ -24,9 +24,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private int maxInflightWindow = 10;
     private int clientInstanceCount = 1;
 
-
     private String SHARED_SUBSCRIPTION_PREFIX= "$share:"+new Random().nextInt()+":";
-
 
     /**
      * topic - list(messages)
@@ -116,6 +114,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
             topic = SHARED_SUBSCRIPTION_PREFIX + topic;
         }
         for (MqttClient mqttClient : mqttClients) {
+            System.out.println("Subscripe " + topic);
             mqttClient.subscribe(topic, 1);
         }
 
