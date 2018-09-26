@@ -112,11 +112,14 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     public List<byte[]> getMessages(String topic) {
         List<byte[]> messages = new ArrayList<>(receivedMessages.size());
-        for (ReceivedMessage msg : receivedMessages) {
-            if (msg.topic.equals(topic)) {
-                messages.add(msg.payload);
+        synchronized (receivedMessages) {
+            for (ReceivedMessage msg : receivedMessages) {
+                if (msg.topic.equals(topic)) {
+                    messages.add(msg.payload);
+                }
             }
         }
+
         return messages;
     }
 
