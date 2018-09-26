@@ -16,11 +16,17 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private final int brokerPort;
     private final String username;
     private final String password;
-    private final String clientId;
     private String truststorePath;
     private String truststorePass;
 
-    private MqttClient mqttClient;
+    private List<MqttClient> mqttClients = new ArrayList<>();
+
+    private int maxInflightWindow = 10;
+    private int clientInstanceCount = 1;
+
+
+    private String SHARED_SUBSCRIPTION_PREFIX= "$share:"+new Random().nextInt()+":";
+
 
     /**
      * topic - list(messages)
@@ -28,27 +34,44 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private Set<ReceivedMessage> receivedMessages = Collections.synchronizedSet(new HashSet<>());
 
 
-    public MqttClientRule(String brokerhost, boolean ssl, int brokerPort, String username, String password, String truststorePath, String truststorePass) {
+
+    private MqttClientRule(String brokerhost, boolean ssl, int brokerPort, String username, String password, String truststorePath, String truststorePass) {
         this.brokerhost = brokerhost;
         this.ssl = ssl;
         this.brokerPort = brokerPort;
         this.username = username;
         this.password = password;
-        this.clientId = "MqttClientRuleTesting_" + System.currentTimeMillis() + "_" + new Random(System.currentTimeMillis()).nextInt();
         this.truststorePath = truststorePath;
         this.truststorePass = truststorePass;
     }
 
+    public MqttClientRule withMaxInflight(int maxInflight) {
+        maxInflightWindow = maxInflight;
+        return this;
+    }
+
+    public MqttClientRule withMqttClientInstances(int clientInstanceCount) {
+        this.clientInstanceCount = clientInstanceCount;
+        return this;
+    }
+
     @Override
     protected void before() throws Throwable {
+        for (int i=0; i<clientInstanceCount; i++) {
+            MqttClient client = connect();
+            mqttClients.add(client);
+        }
+    }
 
+    private MqttClient connect() throws MqttException {
         String serverUri = (ssl ? "ssl://" : "tcp://") + brokerhost + ":" + brokerPort;
+        String clientId = "MqttClientRuleTesting_" + System.currentTimeMillis() + "_" + new Random(System.currentTimeMillis()).nextInt();
 
-        mqttClient = new MqttClient(serverUri, clientId, new MemoryPersistence());
+        MqttClient mqttClient = new MqttClient(serverUri, clientId, new MemoryPersistence());
         mqttClient.setCallback(this);
 
         MqttConnectOptions connOpts = new MqttConnectOptions();
-        connOpts.setMaxInflight(20000);
+        connOpts.setMaxInflight(maxInflightWindow);
         connOpts.setCleanSession(true);
         if (username != null) {
             connOpts.setUserName(username);
@@ -72,26 +95,37 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
         System.out.println("MQTT Connect....");
         mqttClient.connect(connOpts);
+
+        return mqttClient;
     }
 
     @Override
     protected void after() {
         try {
             System.out.println("MQTT Disconnect...");
-            mqttClient.disconnect();
+            for (MqttClient mqttClient : mqttClients) {
+                mqttClient.disconnect();
+            }
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
 
     public void subscribe(String topic) throws MqttException {
-        mqttClient.subscribe(topic, 1);
+        if (clientInstanceCount > 1) {
+            topic = SHARED_SUBSCRIPTION_PREFIX + topic;
+        }
+        for (MqttClient mqttClient : mqttClients) {
+            mqttClient.subscribe(topic, 1);
+        }
+
     }
 
 
     public void publish(String topic, byte[] payload, int qos) throws MqttException {
         System.out.println("Publishing message to " + topic);
-        mqttClient.publish(topic, payload, qos, false);
+        //Currently we publish on the first client - if this causes trouble - make round robin
+        mqttClients.get(0).publish(topic, payload, qos, false);
     }
 
     @Override
