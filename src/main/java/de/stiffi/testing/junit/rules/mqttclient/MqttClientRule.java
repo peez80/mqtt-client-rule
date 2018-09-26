@@ -48,7 +48,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         mqttClient.setCallback(this);
 
         MqttConnectOptions connOpts = new MqttConnectOptions();
-        connOpts.setMaxInflight(1000);
+        connOpts.setMaxInflight(20000);
         connOpts.setCleanSession(true);
         if (username != null) {
             connOpts.setUserName(username);
