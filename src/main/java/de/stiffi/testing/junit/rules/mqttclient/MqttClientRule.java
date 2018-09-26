@@ -1,5 +1,6 @@
 package de.stiffi.testing.junit.rules.mqttclient;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
@@ -24,7 +25,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private int maxInflightWindow = 10;
     private int clientInstanceCount = 1;
 
-    private String SHARED_SUBSCRIPTION_PREFIX= "$share:"+new Random().nextInt()+":";
+    private String SHARED_SUBSCRIPTION_PREFIX= "$share:SH"+ DigestUtils.md5("" + new Random().nextInt()) +":";
 
     /**
      * topic - list(messages)
