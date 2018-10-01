@@ -1,15 +1,11 @@
 package de.stiffi.testing.junit.rules.docker;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import de.stiffi.testing.junit.rules.helpers.ProcessHelper;
 import org.junit.rules.ExternalResource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
 
 public class DockerComposeRule extends ExternalResource {
 
@@ -50,6 +46,20 @@ public class DockerComposeRule extends ExternalResource {
         Process p = Runtime.getRuntime().exec(cmd);
         String logs = getProcessOutput(p);
         return logs;
+    }
+
+    /**
+     *
+     * @param service Service Name
+     * @param privatePort Private/Internal port of the service
+     * @return
+     * @throws IOException
+     */
+    public int getPort(String service, int privatePort) throws IOException {
+        String cmd = "docker-compose -f " + runInfo.composeFilePath + " port " + service + " " + privatePort;
+        String output = ProcessHelper.execute(cmd);
+        String sPort = output.split(":")[1];
+        return Integer.parseInt(sPort);
     }
 
 
