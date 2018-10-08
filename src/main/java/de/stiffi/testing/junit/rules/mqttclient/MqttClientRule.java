@@ -30,7 +30,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     /**
      * topic - list(messages)
      */
-    private Set<ReceivedMessage> receivedMessages = Collections.synchronizedSet(new HashSet<>());
+    private List<ReceivedMessage> receivedMessages = Collections.synchronizedList(new LinkedList<>());
 
 
 
