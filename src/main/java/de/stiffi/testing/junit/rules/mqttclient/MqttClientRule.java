@@ -25,13 +25,12 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private int maxInflightWindow = 10;
     private int clientInstanceCount = 1;
 
-    private String SHARED_SUBSCRIPTION_PREFIX= "$share:SH"+ DigestUtils.md5Hex("" + new Random().nextInt()) +":";
+    private String SHARED_SUBSCRIPTION_PREFIX = "$share:SH" + DigestUtils.md5Hex("" + new Random().nextInt()) + ":";
 
     /**
      * topic - list(messages)
      */
     private List<ReceivedMessage> receivedMessages = Collections.synchronizedList(new LinkedList<>());
-
 
 
     public MqttClientRule(String brokerhost, boolean ssl, int brokerPort, String username, String password, String truststorePath, String truststorePass) {
@@ -56,7 +55,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     @Override
     protected void before() throws Throwable {
-        for (int i=0; i<clientInstanceCount; i++) {
+        for (int i = 0; i < clientInstanceCount; i++) {
             MqttClient client = connect();
             mqttClients.add(client);
         }
@@ -136,7 +135,11 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         receivedMessages.add(new ReceivedMessage(topic, message.getPayload()));
-        System.out.println("Received MQTT message on topic " + topic + ", Count: " + getMessages(topic).size());
+        System.out.println("Received MQTT message on topic "
+                + topic
+                + ", Count: " + getMessages(topic).size()
+                + ", Content: " + (message.getPayload() != null ? Base64.getEncoder().encodeToString(message.getPayload()) : "null")
+        );
     }
 
     @Override
@@ -157,7 +160,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         return messages;
     }
 
-    public void waitForMessage(String topic, long timeoutMs){
+    public void waitForMessage(String topic, long timeoutMs) {
         waitForMessage(topic, timeoutMs, 1);
     }
 
