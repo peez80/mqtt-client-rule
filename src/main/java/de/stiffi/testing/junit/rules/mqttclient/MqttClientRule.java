@@ -14,7 +14,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     private final String brokerhost;
     private final boolean ssl;
-    private final int brokerPort;
+    protected int brokerPort;
     private final String username;
     private final String password;
     private String truststorePath;
