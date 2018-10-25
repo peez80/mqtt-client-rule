@@ -14,7 +14,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     private final String brokerhost;
     private final boolean ssl;
-    protected int brokerPort;
+    private int brokerPort;
     private final String username;
     private final String password;
     private String truststorePath;
@@ -50,6 +50,11 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     public MqttClientRule withMqttClientInstances(int clientInstanceCount) {
         this.clientInstanceCount = clientInstanceCount;
+        return this;
+    }
+
+    public MqttClientRule withBrokerPort(int port) {
+        this.brokerPort = port;
         return this;
     }
 
