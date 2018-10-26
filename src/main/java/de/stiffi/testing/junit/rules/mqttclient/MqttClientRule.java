@@ -104,6 +104,10 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     @Override
     protected void after() {
+        disconnect();
+    }
+
+    public void disconnect() {
         try {
             System.out.println("MQTT Disconnect...");
             for (MqttClient mqttClient : mqttClients) {
