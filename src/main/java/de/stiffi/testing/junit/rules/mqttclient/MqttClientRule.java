@@ -122,7 +122,6 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
             System.out.println("Subscribe " + topic);
             mqttClient.subscribe(topic, 1);
         }
-
     }
 
 
@@ -161,8 +160,11 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
                 }
             }
         }
-
         return messages;
+    }
+
+    public List<ReceivedMessage> getMessages() {
+        return receivedMessages;
     }
 
     public void waitForMessage(String topic, long timeoutMs) {
