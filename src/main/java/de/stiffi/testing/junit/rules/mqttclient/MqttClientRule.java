@@ -31,7 +31,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     /**
      * topic - list(messages)
      */
-    private Set<ReceivedMessage> receivedMessages = new HashSet<>();
+    private List<ReceivedMessage> receivedMessages = new LinkedList<>();
     private MqttMessageHandler messageHandler;
     private boolean doCollectInternally = true;
 
@@ -169,7 +169,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         }
 
         if (doCollectInternally) {
-            synchronized (this) {
+            synchronized (receivedMessages) {
                 receivedMessages.add(new ReceivedMessage(topic, message.getPayload()));
             }
         }
@@ -200,7 +200,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         return messages;
     }
 
-    public Set<ReceivedMessage> getMessages() {
+    public List<ReceivedMessage> getMessages() {
         return receivedMessages;
     }
 
