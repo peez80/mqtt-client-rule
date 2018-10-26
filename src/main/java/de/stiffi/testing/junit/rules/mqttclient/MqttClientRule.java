@@ -108,14 +108,18 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     }
 
     public void disconnect() {
-        try {
+
             System.out.println("MQTT Disconnect...");
             for (MqttClient mqttClient : mqttClients) {
-                mqttClient.disconnect();
+                try {
+                    if (mqttClient.isConnected()) {
+                        mqttClient.disconnect();
+                    }
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+
     }
 
     public void subscribe(String topic) throws MqttException {
