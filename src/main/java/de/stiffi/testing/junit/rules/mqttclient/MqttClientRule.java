@@ -66,12 +66,14 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         return this;
     }
 
-    public void withMessageHandler(MqttMessageHandler messageHandler) {
+    public MqttClientRule withMessageHandler(MqttMessageHandler messageHandler) {
         this.messageHandler = messageHandler;
+        return this;
     }
 
-    public void withInternalMessageCollection(boolean doCollectInternally) {
+    public MqttClientRule withInternalMessageCollection(boolean doCollectInternally) {
         this.doCollectInternally = doCollectInternally;
+        return this;
     }
 
     @Override
