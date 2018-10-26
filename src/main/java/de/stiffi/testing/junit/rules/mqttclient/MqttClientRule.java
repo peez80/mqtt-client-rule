@@ -19,6 +19,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private final String password;
     private String truststorePath;
     private String truststorePass;
+    private boolean doPrintOnMessageReceived = true;
 
     private List<MqttClient> mqttClients = new ArrayList<>();
 
@@ -55,6 +56,11 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     public MqttClientRule withBrokerPort(int port) {
         this.brokerPort = port;
+        return this;
+    }
+
+    public MqttClientRule doPrintOnMessageReceived(boolean doPrint) {
+        this.doPrintOnMessageReceived = doPrint;
         return this;
     }
 
@@ -147,11 +153,13 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         receivedMessages.add(new ReceivedMessage(topic, message.getPayload()));
-        System.out.println("Received MQTT message on topic "
-                + topic
-                + ", Count: " + getMessages(topic).size()
-                + ", Content: " + (message.getPayload() != null ? Base64.getEncoder().encodeToString(message.getPayload()) : "null")
-        );
+        if (doPrintOnMessageReceived) {
+            System.out.println("Received MQTT message on topic "
+                    + topic
+                    + ", Count: " + getMessages(topic).size()
+                    + ", Content: " + (message.getPayload() != null ? Base64.getEncoder().encodeToString(message.getPayload()) : "null")
+            );
+        }
     }
 
     @Override
