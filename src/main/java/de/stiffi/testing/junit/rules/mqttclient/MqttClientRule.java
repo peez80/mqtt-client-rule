@@ -31,7 +31,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     /**
      * topic - list(messages)
      */
-    private List<ReceivedMessage> receivedMessages = Collections.synchronizedList(new LinkedList<>());
+    private Set<ReceivedMessage> receivedMessages = new HashSet<>();
 
 
     public MqttClientRule(String brokerhost, boolean ssl, int brokerPort, String username, String password, String truststorePath, String truststorePass) {
@@ -152,7 +152,10 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
-        receivedMessages.add(new ReceivedMessage(topic, message.getPayload()));
+        synchronized (this) {
+            receivedMessages.add(new ReceivedMessage(topic, message.getPayload()));
+        }
+
         if (doPrintOnMessageReceived) {
             System.out.println("Received MQTT message on topic "
                     + topic
@@ -179,7 +182,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         return messages;
     }
 
-    public List<ReceivedMessage> getMessages() {
+    public Set<ReceivedMessage> getMessages() {
         return receivedMessages;
     }
 
