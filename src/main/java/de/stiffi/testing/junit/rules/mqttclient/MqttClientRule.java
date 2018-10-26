@@ -32,6 +32,8 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
      * topic - list(messages)
      */
     private Set<ReceivedMessage> receivedMessages = new HashSet<>();
+    private MqttMessageHandler messageHandler;
+    private boolean doCollectInternally = true;
 
 
     public MqttClientRule(String brokerhost, boolean ssl, int brokerPort, String username, String password, String truststorePath, String truststorePass) {
@@ -62,6 +64,14 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     public MqttClientRule doPrintOnMessageReceived(boolean doPrint) {
         this.doPrintOnMessageReceived = doPrint;
         return this;
+    }
+
+    public void withMessageHandler(MqttMessageHandler messageHandler) {
+        this.messageHandler = messageHandler;
+    }
+
+    public void withInternalMessageCollection(boolean doCollectInternally) {
+        this.doCollectInternally = doCollectInternally;
     }
 
     @Override
@@ -152,8 +162,14 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
-        synchronized (this) {
-            receivedMessages.add(new ReceivedMessage(topic, message.getPayload()));
+        if (messageHandler != null) {
+            messageHandler.messageReceived(new ReceivedMessage(topic, message.getPayload()));
+        }
+
+        if (doCollectInternally) {
+            synchronized (this) {
+                receivedMessages.add(new ReceivedMessage(topic, message.getPayload()));
+            }
         }
 
         if (doPrintOnMessageReceived) {
