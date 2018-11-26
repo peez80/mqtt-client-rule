@@ -114,7 +114,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         }
 
 
-        System.out.println("MQTT Connect....");
+        System.out.println("MQTT Connect " + brokerhost + ":" + brokerPort + "....");
         mqttClient.connect(connOpts);
 
         return mqttClient;
@@ -127,16 +127,16 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     public void disconnect() {
 
-            System.out.println("MQTT Disconnect...");
-            for (MqttClient mqttClient : mqttClients) {
-                try {
-                    if (mqttClient.isConnected()) {
-                        mqttClient.disconnect();
-                    }
-                } catch (MqttException e) {
-                    e.printStackTrace();
+        System.out.println("MQTT Disconnect...");
+        for (MqttClient mqttClient : mqttClients) {
+            try {
+                if (mqttClient.isConnected()) {
+                    mqttClient.disconnect();
                 }
+            } catch (MqttException e) {
+                e.printStackTrace();
             }
+        }
 
     }
 
