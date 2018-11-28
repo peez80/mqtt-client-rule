@@ -20,7 +20,6 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private String truststorePath;
     private String truststorePass;
     private boolean doPrintOnMessageReceived = true;
-    private boolean doStopContainersOnEnd = true;
 
     private List<MqttClient> mqttClients = new ArrayList<>();
 
@@ -64,11 +63,6 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     public MqttClientRule doPrintOnMessageReceived(boolean doPrint) {
         this.doPrintOnMessageReceived = doPrint;
-        return this;
-    }
-
-    public MqttClientRule doStopContainersOnEnd(boolean doStop) {
-        this.doStopContainersOnEnd = doStop;
         return this;
     }
 
@@ -133,10 +127,6 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     public void disconnect() {
         System.out.println("MQTT Disconnect...");
-        if (!doStopContainersOnEnd) {
-            System.out.println("Not stopping Containers!");
-            return;
-        }
         for (MqttClient mqttClient : mqttClients) {
             try {
                 if (mqttClient.isConnected()) {

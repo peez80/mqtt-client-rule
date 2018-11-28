@@ -11,12 +11,19 @@ public class DockerComposeRule extends ExternalResource {
 
     private DockerComposeRunInformation runInfo;
 
+    private boolean doStopContainersAtEnd = true;
+
     public DockerComposeRule(String initialComposeFilePath) {
         this.runInfo = new DockerComposeRunInformation(initialComposeFilePath);
     }
 
     public DockerComposeRule(String initialComposeFilePath, String... servicesToStart) {
         this.runInfo = new DockerComposeRunInformation(initialComposeFilePath, servicesToStart);
+    }
+
+    public DockerComposeRule withStopContainersAtEnd(boolean doStopAtEnd) {
+        this.doStopContainersAtEnd = doStopAtEnd;
+        return this;
     }
 
 
@@ -94,11 +101,18 @@ public class DockerComposeRule extends ExternalResource {
 
     @Override
     protected void before() throws Throwable {
+        System.out.println("Starting docker-compose...");
         start();
     }
 
     @Override
     protected void after() {
+        if (!doStopContainersAtEnd) {
+            System.out.println("Not stopping Containers at the end");
+            return;
+        }
+
+        System.out.println("Stopping docker-compose...");
         stop();
     }
 }
