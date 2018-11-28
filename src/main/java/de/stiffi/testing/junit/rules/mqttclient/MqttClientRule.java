@@ -209,6 +209,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     }
 
     public void waitForMessage(String topic, long timeoutMs, int minimalNumberOfMessages) {
+        System.out.println("Waiting " + timeoutMs + "ms for >=" + minimalNumberOfMessages + " messages on topic " + topic);
         if (timeoutMs <= 0) {
             return;
         }
