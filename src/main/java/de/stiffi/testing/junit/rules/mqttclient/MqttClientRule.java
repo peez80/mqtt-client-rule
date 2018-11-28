@@ -26,6 +26,11 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private int maxInflightWindow = 10;
     private int clientInstanceCount = 1;
 
+    /**
+     * if null, a generated clientId will be used
+     */
+    private String predefinedClientId = null;
+
     private String SHARED_SUBSCRIPTION_PREFIX = "$share:SH" + DigestUtils.md5Hex("" + new Random().nextInt()) + ":";
 
     /**
@@ -61,6 +66,11 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         return this;
     }
 
+    public MqttClientRule withClientId(String clientId) {
+        this.predefinedClientId = clientId;
+        return this;
+    }
+
     public MqttClientRule doPrintOnMessageReceived(boolean doPrint) {
         this.doPrintOnMessageReceived = doPrint;
         return this;
@@ -79,14 +89,20 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     @Override
     protected void before() throws Throwable {
         for (int i = 0; i < clientInstanceCount; i++) {
-            MqttClient client = connect();
+            String clientId = generateClientId(i);
+            MqttClient client = connect(clientId);
             mqttClients.add(client);
         }
     }
 
-    private MqttClient connect() throws MqttException {
+    private String generateClientId(int counter) {
+        return predefinedClientId == null ?
+                "MqttClientRuleTesting_"+ counter + "_" + System.currentTimeMillis()
+                : predefinedClientId + "_" + counter;
+    }
+
+    private MqttClient connect(String clientId) throws MqttException {
         String serverUri = (ssl ? "ssl://" : "tcp://") + brokerhost + ":" + brokerPort;
-        String clientId = "MqttClientRuleTesting_" + System.currentTimeMillis() + "_" + new Random(System.currentTimeMillis()).nextInt();
 
         MqttClient mqttClient = new MqttClient(serverUri, clientId, new MemoryPersistence());
         mqttClient.setCallback(this);
