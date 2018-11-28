@@ -114,7 +114,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         }
 
 
-        System.out.println("MQTT Connect " + brokerhost + ":" + brokerPort + "....");
+        System.out.println("MQTT Connect " + brokerhost + ":" + brokerPort + ", clientId: " + clientId + "....");
         mqttClient.connect(connOpts);
 
         return mqttClient;
