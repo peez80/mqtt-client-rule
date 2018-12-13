@@ -12,12 +12,15 @@ public class DockerComposeRule extends ExternalResource {
     private DockerComposeRunInformation runInfo;
 
     private boolean doStopContainersAtEnd = true;
+    private String dockerComposePath = "docker-compose ";
 
     public DockerComposeRule(String initialComposeFilePath) {
+        initDockerComposePath();
         this.runInfo = new DockerComposeRunInformation(initialComposeFilePath);
     }
 
     public DockerComposeRule(String initialComposeFilePath, String... servicesToStart) {
+        initDockerComposePath();
         this.runInfo = new DockerComposeRunInformation(initialComposeFilePath, servicesToStart);
     }
 
@@ -28,10 +31,17 @@ public class DockerComposeRule extends ExternalResource {
 
 
     public void start() throws IOException {
-        String cmd = "docker-compose -f " + runInfo.composeFilePath + " up -d " + runInfo.getServicesAsString();
+        String cmd = dockerComposePath + " -f " + runInfo.composeFilePath + " up -d " + runInfo.getServicesAsString();
         System.out.println(cmd);
         Process p = Runtime.getRuntime().exec(cmd);
         System.out.println(getProcessOutput(p));
+    }
+
+
+    private void initDockerComposePath() {
+        if (System.getenv("DOCKER_COMPOSE_PATH") != null) {
+            dockerComposePath = System.getenv("DOCKER_COMPOSE_PATH") + " ";
+        }
     }
 
     private String getProcessOutput(Process p) throws IOException {
@@ -48,7 +58,7 @@ public class DockerComposeRule extends ExternalResource {
     }
 
     public String getLogs(String service) throws IOException {
-        String cmd = "docker-compose -f " + runInfo.composeFilePath + " logs " + service;
+        String cmd = dockerComposePath + " -f " + runInfo.composeFilePath + " logs " + service;
         System.out.println(cmd);
         Process p = Runtime.getRuntime().exec(cmd);
         String logs = getProcessOutput(p);
@@ -63,7 +73,7 @@ public class DockerComposeRule extends ExternalResource {
      * @throws IOException
      */
     public int getPort(String service, int privatePort) throws IOException {
-        String cmd = "docker-compose -f " + runInfo.composeFilePath + " port " + service + " " + privatePort;
+        String cmd = dockerComposePath + " -f " + runInfo.composeFilePath + " port " + service + " " + privatePort;
         String output = ProcessHelper.execute(cmd);
         String sPort = output.split(":")[1];
         return Integer.parseInt(sPort);
@@ -72,7 +82,7 @@ public class DockerComposeRule extends ExternalResource {
 
     public void stop() {
         try {
-            String cmd = "docker-compose -f " + runInfo.composeFilePath + " rm -sf " + runInfo.getServicesAsString();
+            String cmd = dockerComposePath + " -f " + runInfo.composeFilePath + " rm -sf " + runInfo.getServicesAsString();
 
             System.out.println(cmd);
             Process p = Runtime.getRuntime().exec(cmd);
@@ -84,7 +94,7 @@ public class DockerComposeRule extends ExternalResource {
 
     public void stop(String serviceName) {
         try {
-            String cmd = "docker-compose -f " + runInfo.composeFilePath + " rm -sf " + serviceName;
+            String cmd = dockerComposePath + " -f " + runInfo.composeFilePath + " rm -sf " + serviceName;
 
             System.out.println(cmd);
             Process p = Runtime.getRuntime().exec(cmd);
