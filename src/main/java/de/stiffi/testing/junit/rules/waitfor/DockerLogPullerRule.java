@@ -41,6 +41,6 @@ public class DockerLogPullerRule extends ExternalResource {
         }
 
         //If we reach here, the regex was never found
-        throw new TimedoutException("Regex " + regex.pattern() + " " + " not found in logs for container " + containerName);
+        throw new TimedoutException("Regex " + regex.pattern() + " " + " not found in logs for container " + containerName + " within " + (timeoutMs/1000) + "sec");
     }
 }
