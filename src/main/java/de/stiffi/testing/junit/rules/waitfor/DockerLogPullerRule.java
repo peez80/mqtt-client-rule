@@ -41,6 +41,10 @@ public class DockerLogPullerRule extends ExternalResource {
         }
 
         //If we reach here, the regex was never found
-        throw new TimedoutException("Regex " + regex.pattern() + " " + " not found in logs for container " + containerName + " within " + (timeoutMs/1000) + "sec");
+        throw new TimedoutException("Regex " + regex.pattern() + " " + " not found in logs for container " + containerName + " within " + (timeoutMs/1000) + "sec. \n Last 50 Log Lines:\n" + gatherLastDockerLogLines());
+    }
+
+    private String gatherLastDockerLogLines() throws IOException {
+        return ProcessHelper.execute("docker logs --tail=50 " + containerName);
     }
 }
