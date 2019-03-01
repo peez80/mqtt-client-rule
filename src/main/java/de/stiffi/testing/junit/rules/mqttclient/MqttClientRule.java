@@ -179,12 +179,12 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         if (messageHandler != null) {
-            messageHandler.messageReceived(new ReceivedMessage(topic, message.getPayload()));
+            messageHandler.messageReceived(new ReceivedMessage(topic, message.getPayload(), message.isRetained()));
         }
 
         if (doCollectInternally) {
             synchronized (receivedMessages) {
-                receivedMessages.add(new ReceivedMessage(topic, message.getPayload()));
+                receivedMessages.add(new ReceivedMessage(topic, message.getPayload(), message.isRetained()));
             }
         }
 
@@ -206,8 +206,20 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         List<byte[]> messages = new ArrayList<>(receivedMessages.size());
         synchronized (receivedMessages) {
             for (ReceivedMessage msg : receivedMessages) {
-                if (msg.topic.equals(topic)) {
-                    messages.add(msg.payload);
+                if (msg.getTopic().equals(topic)) {
+                    messages.add(msg.getPayload());
+                }
+            }
+        }
+        return messages;
+    }
+
+    public List<ReceivedMessage> getReceivedMessages(String topic) {
+        List<ReceivedMessage> messages = new ArrayList<>(receivedMessages.size());
+        synchronized (receivedMessages) {
+            for (ReceivedMessage msg : receivedMessages) {
+                if (msg.getTopic().equals(topic)) {
+                    messages.add(msg);
                 }
             }
         }
