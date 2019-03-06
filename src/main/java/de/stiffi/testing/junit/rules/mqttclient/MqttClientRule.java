@@ -170,11 +170,14 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         }
     }
 
-
     public void publish(String topic, byte[] payload, int qos) throws MqttException {
+        publish(topic, payload, qos, false);
+    }
+
+    public void publish(String topic, byte[] payload, int qos, boolean retained) throws MqttException {
         System.out.println("Publishing message to " + topic);
         //Currently we publish on the first client - if this causes trouble - make round robin
-        mqttClients.get(0).publish(topic, payload, qos, false);
+        mqttClients.get(0).publish(topic, payload, qos, retained);
     }
 
     @Override
