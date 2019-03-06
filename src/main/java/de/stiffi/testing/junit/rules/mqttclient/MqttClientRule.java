@@ -285,13 +285,13 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         waitForMessage(topic, waitForMessageTimeout, expectedMessageCount);
         List<byte[]> receivedMessages = getMessages(topic);
 
-        if (expectedMessageCount == -1 && receivedMessages.size() > 0) {
+        if (expectedMessageCount == -1 && receivedMessages.size() == 0) {
             //-1 means, that an undefined number of messages should be received. At least 1
+            Assert.fail(failedMessage +", Topic: " + topic);
+        }else if (expectedMessageCount == -1 && receivedMessages.size() > 0) {
             return;
-        }
-
-        String msg = failedMessage + ", \nExpected : " + expectedMessageCount + " messages on " + topic + "\nActual   : " + receivedMessages.size() + " messages";
-        if (receivedMessages.size() != expectedMessageCount) {
+        }else if (receivedMessages.size() != expectedMessageCount) {
+            String msg = failedMessage + ", \nExpected : " + expectedMessageCount + " messages on " + topic + "\nActual   : " + receivedMessages.size() + " messages";
             Assert.fail(msg);
         }
     }
