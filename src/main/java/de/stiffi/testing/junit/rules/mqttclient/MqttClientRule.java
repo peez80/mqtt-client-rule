@@ -88,6 +88,10 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     @Override
     protected void before() throws Throwable {
+        connect();
+    }
+
+    public void connect() throws MqttException {
         for (int i = 0; i < clientInstanceCount; i++) {
             String clientId = generateClientId(i);
             MqttClient client = connect(clientId);
@@ -152,6 +156,8 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
                 e.printStackTrace();
             }
         }
+        mqttClients.clear();
+        clearReceivedMessages();
     }
 
     public void subscribe(String topic) throws MqttException {
@@ -228,6 +234,10 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
 
     public List<ReceivedMessage> getMessages() {
         return receivedMessages;
+    }
+
+    public void clearReceivedMessages() {
+        receivedMessages.clear();
     }
 
     public void waitForMessage(String topic, long timeoutMs) {
