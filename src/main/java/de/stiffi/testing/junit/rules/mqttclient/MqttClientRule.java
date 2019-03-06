@@ -268,6 +268,15 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         waitForMessage(topic, 10000l);
     }
 
+    /**
+     * Assert that at least one or more messages are received
+     * @param failedMessage
+     * @param topic
+     */
+    public void assertMessagesReceived(String failedMessage, String topic) {
+        assertMessagesReceived(failedMessage, topic, -1);
+    }
+
     public void assertMessagesReceived(String failedMessage, String topic, int expectedMessageCount) {
         assertMessagesReceived(failedMessage, topic, expectedMessageCount, 10000l);
     }
@@ -275,6 +284,11 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     public void assertMessagesReceived(String failedMessage, String topic, int expectedMessageCount, long waitForMessageTimeout) {
         waitForMessage(topic, waitForMessageTimeout, expectedMessageCount);
         List<byte[]> receivedMessages = getMessages(topic);
+
+        if (expectedMessageCount == -1 && receivedMessages.size() > 0) {
+            //-1 means, that an undefined number of messages should be received. At least 1
+            return;
+        }
 
         String msg = failedMessage + ", \nExpected : " + expectedMessageCount + " messages on " + topic + "\nActual   : " + receivedMessages.size() + " messages";
         if (receivedMessages.size() != expectedMessageCount) {
