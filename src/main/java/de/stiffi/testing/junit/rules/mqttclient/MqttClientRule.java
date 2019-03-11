@@ -20,6 +20,7 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
     private String truststorePath;
     private String truststorePass;
     private boolean doPrintOnMessageReceived = true;
+    private List<String> existingSubscriptions = new ArrayList<>();
 
     private List<MqttClient> mqttClients = new ArrayList<>();
 
@@ -158,9 +159,15 @@ public class MqttClientRule extends ExternalResource implements MqttCallback {
         }
         mqttClients.clear();
         clearReceivedMessages();
+        existingSubscriptions.clear();
     }
 
     public void subscribe(String topic) throws MqttException {
+        if (existingSubscriptions.contains(topic)) {
+            return;
+        }
+
+        existingSubscriptions.add(topic);
         if (clientInstanceCount > 1) {
             topic = SHARED_SUBSCRIPTION_PREFIX + topic;
         }
