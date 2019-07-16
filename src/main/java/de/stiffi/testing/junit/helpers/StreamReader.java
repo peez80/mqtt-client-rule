@@ -1,4 +1,4 @@
-package de.stiffi.testing.junit.rules.helpers;
+package de.stiffi.testing.junit.helpers;
 
 import java.io.BufferedReader;
 import java.io.IOException;

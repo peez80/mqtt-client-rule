@@ -1,4 +1,4 @@
-package de.stiffi.testing.junit.rules.helpers;
+package de.stiffi.testing.junit.helpers;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.auth.AuthScope;

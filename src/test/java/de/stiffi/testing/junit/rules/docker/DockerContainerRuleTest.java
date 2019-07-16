@@ -1,6 +1,6 @@
 package de.stiffi.testing.junit.rules.docker;
 
-import de.stiffi.testing.junit.rules.helpers.ProcessHelper;
+import de.stiffi.testing.junit.helpers.ProcessHelper;
 import org.junit.Assert;
 import org.junit.Test;
 

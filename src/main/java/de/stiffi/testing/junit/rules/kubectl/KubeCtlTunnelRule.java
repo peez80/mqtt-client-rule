@@ -5,8 +5,8 @@ import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.google.common.base.Stopwatch;
-import de.stiffi.testing.junit.rules.helpers.HttpHelper;
-import de.stiffi.testing.junit.rules.helpers.ProcessHelper;
+import de.stiffi.testing.junit.helpers.HttpHelper;
+import de.stiffi.testing.junit.helpers.ProcessHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.rules.ExternalResource;
@@ -226,7 +226,7 @@ public class KubeCtlTunnelRule extends ExternalResource {
 
         Stopwatch stopw = Stopwatch.createStarted();
         while (true) {
-            String result = de.stiffi.testing.junit.rules.helpers.ProcessHelper.execute(StringUtils.join(cmd, " "));
+            String result = ProcessHelper.execute(StringUtils.join(cmd, " "));
 
             if (regexToFind.matcher(result).matches()) {
                 break;

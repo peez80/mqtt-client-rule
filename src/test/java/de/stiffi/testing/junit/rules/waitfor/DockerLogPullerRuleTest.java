@@ -1,11 +1,7 @@
 package de.stiffi.testing.junit.rules.waitfor;
 
-import de.stiffi.testing.junit.rules.helpers.ProcessHelper;
+import de.stiffi.testing.junit.helpers.ProcessHelper;
 import org.junit.Test;
-
-import java.io.IOException;
-
-import static org.junit.Assert.*;
 
 public class DockerLogPullerRuleTest {
 

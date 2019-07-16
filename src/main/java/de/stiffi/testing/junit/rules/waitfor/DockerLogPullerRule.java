@@ -1,6 +1,6 @@
 package de.stiffi.testing.junit.rules.waitfor;
 
-import de.stiffi.testing.junit.rules.helpers.ProcessHelper;
+import de.stiffi.testing.junit.helpers.ProcessHelper;
 import org.junit.rules.ExternalResource;
 
 import java.io.IOException;

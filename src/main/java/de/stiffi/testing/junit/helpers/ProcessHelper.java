@@ -1,4 +1,4 @@
-package de.stiffi.testing.junit.rules.helpers;
+package de.stiffi.testing.junit.helpers;
 
 import org.apache.commons.lang3.StringUtils;
 

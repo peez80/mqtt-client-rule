@@ -1,7 +1,7 @@
 package de.stiffi.testing.junit.rules.docker;
 
-import de.stiffi.testing.junit.rules.helpers.ProcessHelper;
-import de.stiffi.testing.junit.rules.helpers.SocketHelper;
+import de.stiffi.testing.junit.helpers.ProcessHelper;
+import de.stiffi.testing.junit.helpers.SocketHelper;
 import org.junit.rules.ExternalResource;
 
 import java.io.IOException;
