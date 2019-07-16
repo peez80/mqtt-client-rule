@@ -149,7 +149,7 @@ public class KubeCtlTunnelRule extends ExternalResource {
     }
 
     @Override
-    protected void before() throws Throwable {
+    public void before() throws Throwable {
         connectWithRetries();
     }
 
@@ -315,7 +315,7 @@ public class KubeCtlTunnelRule extends ExternalResource {
     }
 
     @Override
-    protected void after() {
+    public void after() {
         try {
             deletePodForwardingPod();
         } catch (IOException e) {
