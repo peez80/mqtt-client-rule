@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Properties;
 
@@ -55,6 +56,25 @@ public abstract class AbstractEnvironmentProperties {
             try (InputStream in = getClass().getResourceAsStream(getPropertyPath())) {
                 props.load(in);
             }
+        }
+    }
+
+    public static String getRealFile(String classpathOrRealFilePath) throws IOException {
+        Path p = Paths.get(classpathOrRealFilePath);
+        if (Files.isRegularFile(p)) {
+            return classpathOrRealFilePath;
+        }
+        else {
+
+            try (InputStream in = AbstractEnvironmentProperties.class.getResourceAsStream(classpathOrRealFilePath)) {
+                if (in != null) {
+                    Path tmpFile = Files.createTempFile("docker-compose_test", ".yml");
+                    Files.copy(in, tmpFile, StandardCopyOption.REPLACE_EXISTING);
+                    return tmpFile.toAbsolutePath().toString();
+                }
+
+            }
+            throw new IllegalStateException("Could not find " + classpathOrRealFilePath);
         }
     }
 
