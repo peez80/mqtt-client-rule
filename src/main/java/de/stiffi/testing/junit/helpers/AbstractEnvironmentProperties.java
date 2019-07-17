@@ -87,7 +87,10 @@ public abstract class AbstractEnvironmentProperties {
         return System.getProperty(envName) != null ? System.getProperty(envName) : System.getenv(envName);
     }
 
-    public Properties props() {
-        return props;
+    protected String get(String key) {
+        return props.getProperty(key);
+    }
+    protected String get(String key, String defaultValue) {
+        return props.getProperty(key, defaultValue);
     }
 }
