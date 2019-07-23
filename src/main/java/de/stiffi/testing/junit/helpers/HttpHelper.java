@@ -65,7 +65,7 @@ public class HttpHelper {
                 post.setHeader(e.getKey(), e.getValue());
             }
         }
-        Dumper.sout("HTTP POST: " + url + ": " + payload);
+        Dumper.sout("HTTP POST: " + url + ": " + new String(payload));
         CloseableHttpClient httpclient = getClient(uri, basicAuth, 60000);
         CloseableHttpResponse response = httpclient.execute(post);
         Dumper.sout("HTTP Response: " + response.getStatusLine().getStatusCode() + " - " + response.getStatusLine().getReasonPhrase());
