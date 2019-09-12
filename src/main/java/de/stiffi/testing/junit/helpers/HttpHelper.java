@@ -83,6 +83,10 @@ public class HttpHelper {
     }
 
     public static CloseableHttpResponse executeGet(String url, String... acceptedMediaTypes) throws IOException {
+        return executeGet(url, acceptedMediaTypes, null);
+    }
+
+    public static CloseableHttpResponse executeGet(String url, String[] acceptedMediaTypes, Map<String, String> headers) throws IOException {
         URI uri = URI.create(url);
         CloseableHttpClient httpClient = getClient(uri, null, 10000);
         HttpGet get = new HttpGet(uri);
@@ -91,6 +95,12 @@ public class HttpHelper {
                 get.addHeader(HttpHeaders.ACCEPT, accept);
             }
         }
+        if (headers != null) {
+            headers.entrySet().forEach(
+                    entry -> get.addHeader(entry.getKey(), entry.getValue())
+            );
+        }
+
         System.out.println("HTTP GET: " + url);
         CloseableHttpResponse response = httpClient.execute(get);
         System.out.println("--> "+ response.getStatusLine().getStatusCode() + " - " + response.getStatusLine().getReasonPhrase());
